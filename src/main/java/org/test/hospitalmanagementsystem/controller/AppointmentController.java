@@ -1,30 +1,31 @@
 package org.test.hospitalmanagementsystem.controller;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.test.hospitalmanagementsystem.entity.Slot;
+import org.test.hospitalmanagementsystem.model.AppointmentRequest;
+import org.test.hospitalmanagementsystem.model.AppointmentResponse;
+import org.test.hospitalmanagementsystem.service.AppointmentService;
+import org.test.hospitalmanagementsystem.service.SlotService;
+
+import java.util.List;
 
 @RestController
-@RequestMapping("/api/appointment")
+@RequestMapping("/api/v1/appointment")
 public class AppointmentController {
 
-    @RequestMapping("/get")
-    public String getAppointment() {
-        return "Get appointment";
+    AppointmentService appointmentService;
+
+    public AppointmentController(AppointmentService appointmentService) {
+        this.appointmentService = appointmentService;
     }
 
-    @RequestMapping("/add")
-    public String addAppointment() {
-        return "Add appointment";
+    @PostMapping("/book")
+    public AppointmentResponse bookAppointment(@RequestBody AppointmentRequest appointmentRequest) {
+        return appointmentService.bookSlot(appointmentRequest);
     }
 
-    @RequestMapping("/update")
-    public String updateAppointment() {
-        return "Update appointment";
+    @GetMapping("/getSlots")
+    public List<Slot> getSlots(@RequestParam String date,@RequestParam Long doctorId) {
+        return appointmentService.getAllSlotsByDateAndDoctorId(date, doctorId);
     }
-
-    @RequestMapping("/delete")
-    public String deleteAppointment() {
-        return "Delete appointment";
-    }
-
 }
