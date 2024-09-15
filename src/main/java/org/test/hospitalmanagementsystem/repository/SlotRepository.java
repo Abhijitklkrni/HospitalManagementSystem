@@ -15,4 +15,6 @@ public interface SlotRepository extends JpaRepository<Slot, Long> {
     List<Slot> findAllByDateAndDoctorId(String date, Long doctorId);
 
     List<Slot> findAllByScheduleId(long scheduleId);
+
+    Optional<Slot> findByDoctorIdAndDateAndStartTime(Long doctorId, String appointmentDate, String startTime);
 }

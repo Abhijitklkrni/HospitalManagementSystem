@@ -6,7 +6,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.test.hospitalmanagementsystem.entity.DoctorSchedule;
 import org.test.hospitalmanagementsystem.entity.Slot;
 import org.test.hospitalmanagementsystem.model.DocScheduleStatus;
-import org.test.hospitalmanagementsystem.model.SLOT_STATUS;
+import org.test.hospitalmanagementsystem.model.DoctorScheduleResponse;
+import org.test.hospitalmanagementsystem.model.SlotStatus;
 import org.test.hospitalmanagementsystem.repository.DocScheduleRepository;
 
 import java.time.LocalTime;
@@ -21,11 +22,14 @@ public class DocScheduleService {
     public static final int SLOT_DURATION_MIN = 30;
     SlotService slotService;
 
+    AppointmentService appointmentHistoryService;
+
     DocScheduleRepository repository;
 
-    public DocScheduleService(DocScheduleRepository repository, SlotService slotService) {
-        this.repository = repository;
+    public DocScheduleService(SlotService slotService, AppointmentService appointmentHistoryService, DocScheduleRepository repository) {
         this.slotService = slotService;
+        this.appointmentHistoryService = appointmentHistoryService;
+        this.repository = repository;
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -51,7 +55,7 @@ public class DocScheduleService {
             slot.setDate(doctorSchedule.getDate());
             slot.setStartTime(time.format(formatter));
             slot.setEndTime(time.plusMinutes(SLOT_DURATION_MIN).format(formatter));
-            slot.setStatus(SLOT_STATUS.AVAILABLE);
+            slot.setStatus(SlotStatus.AVAILABLE);
             slots.add(slot);
         }
 
@@ -59,14 +63,18 @@ public class DocScheduleService {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public DoctorSchedule cancelDocSchedule(DoctorSchedule doctorSchedule) {
-        if(doctorSchedule.getStatus()!=DocScheduleStatus.CANCELLED) throw new RuntimeException("Request action as CANCELLED");
+    public DoctorScheduleResponse cancelDocSchedule(DoctorSchedule doctorSchedule) {
+        if(doctorSchedule.getStatus()!=DocScheduleStatus.CANCELLED) throw new RuntimeException("Request action should be CANCELLED");
         DoctorSchedule saved = repository.getById(doctorSchedule.getScheduleId());
         saved.setStatus(DocScheduleStatus.CANCELLED);
         repository.save(saved);
 
-        slotService.cancelSlotsForSchedule(saved.getScheduleId());
-        return saved;
+        List<Slot> slots = slotService.cancelSlotsForSchedule(saved.getScheduleId());
+
+        //Find the AppointmentHistory for the slots and cancel them
+        appointmentHistoryService.cancelAppointmentsForSlots(slots,doctorSchedule);
+        return saved.toDocScheduleResponse();
+
     }
 
 }

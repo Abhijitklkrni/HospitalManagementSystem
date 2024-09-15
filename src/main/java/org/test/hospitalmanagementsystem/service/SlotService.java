@@ -1,13 +1,9 @@
 package org.test.hospitalmanagementsystem.service;
 
 import org.springframework.stereotype.Service;
-import org.test.hospitalmanagementsystem.entity.Doctor;
-import org.test.hospitalmanagementsystem.entity.Patient;
 import org.test.hospitalmanagementsystem.entity.Slot;
 import org.test.hospitalmanagementsystem.exception.SlotUnavailableException;
-import org.test.hospitalmanagementsystem.model.AppointmentRequest;
-import org.test.hospitalmanagementsystem.model.AppointmentResponse;
-import org.test.hospitalmanagementsystem.model.SLOT_STATUS;
+import org.test.hospitalmanagementsystem.model.SlotStatus;
 import org.test.hospitalmanagementsystem.repository.SlotRepository;
 
 import java.util.List;
@@ -39,12 +35,12 @@ public class SlotService {
 
     public Slot bookSlot(Long slotId, Long patientId) {
         Optional<Slot> slot = repository.findById(slotId);
-        if(slot.get().getStatus() == SLOT_STATUS.BOOKED){
+        if(slot.get().getStatus() == SlotStatus.BOOKED){
             throw new SlotUnavailableException("Slot not available");
         }
         slot.ifPresentOrElse(slot1 -> {
                     slot1.setPatientId(patientId);
-                    slot1.setStatus(SLOT_STATUS.BOOKED);
+                    slot1.setStatus(SlotStatus.BOOKED);
                     repository.save(slot1);
                 },
                 () -> {
@@ -53,12 +49,27 @@ public class SlotService {
         return slot.get();
     }
 
-    public void cancelSlotsForSchedule(long scheduleId) {
+    public List<Slot> cancelSlotsForSchedule(long scheduleId) {
         List<Slot> slots = repository.findAllByScheduleId(scheduleId);
         slots.forEach(slot -> {
-            slot.setStatus(SLOT_STATUS.CANCELLED);
+            slot.setStatus(SlotStatus.CANCELLED);
             slot.setPatientId(-1);
             repository.save(slot);
         });
+
+        return slots;
+    }
+
+    public void freeTheSlot(Long doctorId, String appointmentDate, String startTime) {
+
+        Optional<Slot> slot = repository.findByDoctorIdAndDateAndStartTime(doctorId, appointmentDate, startTime);
+        slot.ifPresentOrElse(slot1 -> {
+                    slot1.setStatus(SlotStatus.AVAILABLE);
+                    slot1.setPatientId(-1);
+                    repository.save(slot1);
+                },
+                () -> {
+                    throw new SlotUnavailableException("Slot not available");
+                });
     }
 }

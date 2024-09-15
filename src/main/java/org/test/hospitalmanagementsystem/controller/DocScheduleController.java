@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.test.hospitalmanagementsystem.entity.DoctorSchedule;
+import org.test.hospitalmanagementsystem.model.DoctorScheduleResponse;
 import org.test.hospitalmanagementsystem.service.DocScheduleService;
 import org.test.hospitalmanagementsystem.service.DoctorService;
 
@@ -24,7 +25,7 @@ public class DocScheduleController {
     }
 
     @PostMapping("/cancel")
-    public DoctorSchedule cancelDocSchedule(@RequestBody DoctorSchedule doctorSchedule) {
+    public DoctorScheduleResponse cancelDocSchedule(@RequestBody DoctorSchedule doctorSchedule) {
         return service.cancelDocSchedule(doctorSchedule);
     }
 }

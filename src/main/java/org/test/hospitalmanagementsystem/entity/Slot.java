@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
-import org.test.hospitalmanagementsystem.model.SLOT_STATUS;
+import org.test.hospitalmanagementsystem.model.SlotStatus;
 
 @Entity
 @Data
@@ -22,7 +22,7 @@ public class Slot {
     private String date;
 
     @Enumerated(EnumType.STRING)
-    private SLOT_STATUS status;
+    private SlotStatus status;
 
     //Referenced by foreign key constraint from Doctor on field doctorId
     private long doctorId;

@@ -1,6 +1,6 @@
 package org.test.hospitalmanagementsystem.model;
 
-public enum SLOT_STATUS {
+public enum SlotStatus {
 
     AVAILABLE,
     BOOKED,

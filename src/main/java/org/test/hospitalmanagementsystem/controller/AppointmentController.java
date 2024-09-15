@@ -1,6 +1,7 @@
 package org.test.hospitalmanagementsystem.controller;
 
 import org.springframework.web.bind.annotation.*;
+import org.test.hospitalmanagementsystem.entity.AppointmentHistory;
 import org.test.hospitalmanagementsystem.entity.Slot;
 import org.test.hospitalmanagementsystem.model.AppointmentRequest;
 import org.test.hospitalmanagementsystem.model.AppointmentResponse;
@@ -25,13 +26,18 @@ public class AppointmentController {
     }
 
     @GetMapping("/getSlots")
-    public List<Slot> getSlots(@RequestParam String date,@RequestParam Long doctorId) {
+    public List<Slot> getSlotsForDoctorIdAndDate(@RequestParam String date,@RequestParam Long doctorId) {
         return appointmentService.getAllSlotsByDateAndDoctorId(date, doctorId);
     }
 
     @GetMapping("/getAppointmentsByPatient")
     public List<AppointmentResponse> getAppointmentsByPatient(@RequestParam Long patientId) {
         return appointmentService.getAppointmentsByPatient(patientId);
+    }
+
+    @PostMapping("/cancelAppointment")
+    public AppointmentHistory cancelAppointment(@RequestParam Long appointmentId) {
+        return appointmentService.cancelAppointment(appointmentId);
     }
 
 }
