@@ -14,7 +14,7 @@ import org.test.hospitalmanagementsystem.model.DoctorScheduleResponse;
 @AllArgsConstructor
 @Data
 @Builder
-public class DoctorSchedule {
+public class DoctorSchedule extends BaseModel{
 
     @Id
     @GeneratedValue(generator = "increment")

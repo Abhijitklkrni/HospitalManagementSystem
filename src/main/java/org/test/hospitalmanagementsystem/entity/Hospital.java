@@ -13,7 +13,7 @@ import org.hibernate.annotations.GenericGenerator;
 @NoArgsConstructor
 @Entity
 @Data
-public class Hospital {
+public class Hospital extends BaseModel{
 
     @Id
     @GeneratedValue(generator = "increment")

@@ -11,7 +11,7 @@ import org.test.hospitalmanagementsystem.model.SlotStatus;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Slot {
+public class Slot extends BaseModel{
 
     @Id
     @GeneratedValue(generator = "increment")

@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AppointmentHistory {
+public class AppointmentHistory extends BaseModel{
 
     @Id
     @GeneratedValue
