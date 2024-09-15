@@ -28,4 +28,10 @@ public class AppointmentController {
     public List<Slot> getSlots(@RequestParam String date,@RequestParam Long doctorId) {
         return appointmentService.getAllSlotsByDateAndDoctorId(date, doctorId);
     }
+
+    @GetMapping("/getAppointmentsByPatient")
+    public List<AppointmentResponse> getAppointmentsByPatient(@RequestParam Long patientId) {
+        return appointmentService.getAppointmentsByPatient(patientId);
+    }
+
 }

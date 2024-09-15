@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.test.hospitalmanagementsystem.entity.Doctor;
 import org.test.hospitalmanagementsystem.entity.Patient;
 import org.test.hospitalmanagementsystem.entity.Slot;
+import org.test.hospitalmanagementsystem.exception.SlotUnavailableException;
 import org.test.hospitalmanagementsystem.model.AppointmentRequest;
 import org.test.hospitalmanagementsystem.model.AppointmentResponse;
 import org.test.hospitalmanagementsystem.model.SLOT_STATUS;
@@ -39,7 +40,7 @@ public class SlotService {
     public Slot bookSlot(Long slotId, Long patientId) {
         Optional<Slot> slot = repository.findById(slotId);
         if(slot.get().getStatus() == SLOT_STATUS.BOOKED){
-            throw new RuntimeException("Slot not available");
+            throw new SlotUnavailableException("Slot not available");
         }
         slot.ifPresentOrElse(slot1 -> {
                     slot1.setPatientId(patientId);
@@ -47,8 +48,17 @@ public class SlotService {
                     repository.save(slot1);
                 },
                 () -> {
-                    throw new RuntimeException("Slot not available");
+                    throw new SlotUnavailableException("Slot not available");
                 });
         return slot.get();
+    }
+
+    public void cancelSlotsForSchedule(long scheduleId) {
+        List<Slot> slots = repository.findAllByScheduleId(scheduleId);
+        slots.forEach(slot -> {
+            slot.setStatus(SLOT_STATUS.CANCELLED);
+            slot.setPatientId(-1);
+            repository.save(slot);
+        });
     }
 }

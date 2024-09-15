@@ -15,14 +15,14 @@ public class Patient{
     @Id
     @GeneratedValue(generator = "increment")
     @GenericGenerator(name = "increment", strategy = "increment")
-    public long patientId;
-    public String patientGender;
-    public String patientName;
-    public String patientAddress;
-    public String patientPhone;
-    public String patientEmail;
+    private long patientId;
+    private String patientGender;
+    private String patientName;
+    private String patientAddress;
+    private String patientPhone;
+    private String patientEmail;
 
-
-    public long hospitalId;
+    //Referenced by foreign key constraint from Hospital on field hospitalId
+    private long hospitalId;
 
 }

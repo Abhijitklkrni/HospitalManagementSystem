@@ -18,7 +18,7 @@ public class DoctorService {
         return repository.save(doctor);
     }
 
-    public Doctor getDoctor(Long aLong) {
-        return repository.findById(aLong).orElse(null);
+    public Doctor getDoctor(Long id) {
+        return repository.findById(id).orElse(null);
     }
 }

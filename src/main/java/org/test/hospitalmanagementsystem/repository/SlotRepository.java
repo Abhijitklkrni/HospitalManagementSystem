@@ -13,4 +13,6 @@ public interface SlotRepository extends JpaRepository<Slot, Long> {
     Optional<Slot> findBySlotIdAndDoctorId(Long slotId, Long doctorId);
 
     List<Slot> findAllByDateAndDoctorId(String date, Long doctorId);
+
+    List<Slot> findAllByScheduleId(long scheduleId);
 }

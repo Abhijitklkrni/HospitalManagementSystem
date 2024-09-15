@@ -16,16 +16,21 @@ public class Slot {
     @Id
     @GeneratedValue(generator = "increment")
     @GenericGenerator(name = "increment", strategy = "increment")
-    public long slotId;
-    public String startTime;
-    public String endTime;
-    public String date;
+    private long slotId;
+    private String startTime;
+    private String endTime;
+    private String date;
 
     @Enumerated(EnumType.STRING)
-    public SLOT_STATUS status;
+    private SLOT_STATUS status;
 
-    public long doctorId;
+    //Referenced by foreign key constraint from Doctor on field doctorId
+    private long doctorId;
 
-    public long patientId;
+    //Referenced by foreign key constraint from Patient on field patientId
+    private long patientId;
+
+    //Referenced by foreign key constraint from DoctorSchedule on field scheduleId
+    private long scheduleId;
 
 }

@@ -17,17 +17,18 @@ public class Doctor{
     @Id
     @GeneratedValue(generator = "increment")
     @GenericGenerator(name = "increment", strategy = "increment")
-    public long doctorId;
+    private long doctorId;
 
-    public long hospitalId;
+    //Referenced by foreign key constraint from Hospital on field hospitalId
+    private long hospitalId;
 
-    public String doctorName;
-    public String doctorAddress;
-    public String doctorPhone;
-    public String doctorEmail;
-    public String doctorSpecialization;
-    public String doctorQualification;
-    public String doctorExperience;
+    private String doctorName;
+    private String doctorAddress;
+    private String doctorPhone;
+    private String doctorEmail;
+    private String doctorSpecialization;
+    private String doctorQualification;
+    private String doctorExperience;
 
 
 }

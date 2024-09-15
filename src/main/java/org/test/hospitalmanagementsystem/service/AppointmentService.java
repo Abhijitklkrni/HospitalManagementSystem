@@ -1,6 +1,8 @@
 package org.test.hospitalmanagementsystem.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.test.hospitalmanagementsystem.entity.AppointmentHistory;
 import org.test.hospitalmanagementsystem.entity.Slot;
@@ -26,7 +28,7 @@ public class AppointmentService {
         return slotService.getAllSlotsByDateAndDoctorId(date, doctorId);
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW,isolation = Isolation.REPEATABLE_READ)
     public AppointmentResponse bookSlot(AppointmentRequest appointmentRequest) {
 
         try{
@@ -54,5 +56,18 @@ public class AppointmentService {
             throw new RuntimeException("Slot not available");
         }
 
+    }
+
+    public List<AppointmentResponse> getAppointmentsByPatient(Long patientId) {
+        List<AppointmentHistory> appointments = appointmentHistoryRepository.getAppointmentsByPatientId(patientId);
+
+        return appointments.stream().map(appointment -> AppointmentResponse.builder()
+                .appointmentId(appointment.getAppointmentId())
+                .appointmentDate(appointment.getAppointmentDate())
+                .appointmentTime(appointment.getStartTime())
+                .patientDetails(appointment.getPatientId())
+                .doctorDetails(appointment.getDoctorId())
+                .appointmentStatus(appointment.getAppointmentStatus())
+                .build()).toList();
     }
 }

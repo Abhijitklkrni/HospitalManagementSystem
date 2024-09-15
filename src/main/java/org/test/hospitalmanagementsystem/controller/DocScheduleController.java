@@ -22,4 +22,9 @@ public class DocScheduleController {
     public String addDocSchedule(@RequestBody DoctorSchedule doctorSchedule) {
         return service.addDocSchedule(doctorSchedule);
     }
+
+    @PostMapping("/cancel")
+    public DoctorSchedule cancelDocSchedule(@RequestBody DoctorSchedule doctorSchedule) {
+        return service.cancelDocSchedule(doctorSchedule);
+    }
 }

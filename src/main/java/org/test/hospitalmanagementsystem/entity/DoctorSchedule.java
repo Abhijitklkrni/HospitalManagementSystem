@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
+import org.test.hospitalmanagementsystem.model.DocScheduleStatus;
 
 @Entity
 @NoArgsConstructor
@@ -15,11 +16,14 @@ public class DoctorSchedule {
     @Id
     @GeneratedValue(generator = "increment")
     @GenericGenerator(name = "increment", strategy = "increment")
-    public long scheduleId;
+    private long scheduleId;
 
-    public long doctorId;
-    public String date;
-    public String startTime;
-    public String endTime;
-    public boolean isAvailable;
+    //Referenced by foreign key constraint from Doctor on field doctorId
+    private long doctorId;
+    private String date;
+    private String startTime;
+    private String endTime;
+
+    @Enumerated(EnumType.STRING)
+    private DocScheduleStatus status;
 }

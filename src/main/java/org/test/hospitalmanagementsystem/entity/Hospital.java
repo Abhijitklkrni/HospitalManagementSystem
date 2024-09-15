@@ -18,10 +18,10 @@ public class Hospital {
     @Id
     @GeneratedValue(generator = "increment")
     @GenericGenerator(name = "increment", strategy = "increment")
-    public long hospitalId;
-    public String hospitalName;
-    public String hospitalAddress;
-    public String hospitalContact;
-    public String hospitalEmail;
+    private long hospitalId;
+    private String hospitalName;
+    private String hospitalAddress;
+    private String hospitalContact;
+    private String hospitalEmail;
 
 }

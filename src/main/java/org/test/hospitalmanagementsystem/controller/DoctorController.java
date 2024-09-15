@@ -21,8 +21,8 @@ public class DoctorController {
     }
 
     @GetMapping("/get/{id}")
-    public String getDoctor(@PathVariable String id) {
-        return "Get doctor";
+    public Doctor getDoctor(@PathVariable Long id) {
+        return service.getDoctor(id);
     }
 
 }
