@@ -5,6 +5,7 @@ import org.test.hospitalmanagementsystem.entity.AppointmentHistory;
 import org.test.hospitalmanagementsystem.entity.Slot;
 import org.test.hospitalmanagementsystem.model.AppointmentRequest;
 import org.test.hospitalmanagementsystem.model.AppointmentResponse;
+import org.test.hospitalmanagementsystem.model.SlotResponse;
 import org.test.hospitalmanagementsystem.service.AppointmentService;
 import org.test.hospitalmanagementsystem.service.SlotService;
 
@@ -26,7 +27,7 @@ public class AppointmentController {
     }
 
     @GetMapping("/getSlots")
-    public List<Slot> getSlotsForDoctorIdAndDate(@RequestParam String date,@RequestParam Long doctorId) {
+    public List<SlotResponse> getSlotsForDoctorIdAndDate(@RequestParam String date, @RequestParam Long doctorId) {
         return appointmentService.getAllSlotsByDateAndDoctorId(date, doctorId);
     }
 
@@ -36,7 +37,7 @@ public class AppointmentController {
     }
 
     @PostMapping("/cancelAppointment")
-    public AppointmentHistory cancelAppointment(@RequestParam Long appointmentId) {
+    public AppointmentResponse cancelAppointment(@RequestParam Long appointmentId) {
         return appointmentService.cancelAppointment(appointmentId);
     }
 

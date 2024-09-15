@@ -1,6 +1,7 @@
 package org.test.hospitalmanagementsystem.service;
 
 import org.springframework.stereotype.Service;
+import org.test.hospitalmanagementsystem.entity.Patient;
 import org.test.hospitalmanagementsystem.entity.Slot;
 import org.test.hospitalmanagementsystem.exception.SlotUnavailableException;
 import org.test.hospitalmanagementsystem.model.SlotStatus;
@@ -29,7 +30,7 @@ public class SlotService {
     }
 
     public List<Slot> getAllSlotsByDateAndDoctorId(String date, Long doctorId) {
-        return repository.findAllByDateAndDoctorId(date, doctorId);
+        return repository.findAllByDateAndDoctor_DoctorId(date, doctorId);
     }
 
 
@@ -39,7 +40,7 @@ public class SlotService {
             throw new SlotUnavailableException("Slot not available");
         }
         slot.ifPresentOrElse(slot1 -> {
-                    slot1.setPatientId(patientId);
+                    slot1.setPatient(Patient.builder().patientId(patientId).build());
                     slot1.setStatus(SlotStatus.BOOKED);
                     repository.save(slot1);
                 },
@@ -50,10 +51,10 @@ public class SlotService {
     }
 
     public List<Slot> cancelSlotsForSchedule(long scheduleId) {
-        List<Slot> slots = repository.findAllByScheduleId(scheduleId);
+        List<Slot> slots = repository.findAllBySchedule_ScheduleId(scheduleId);
         slots.forEach(slot -> {
             slot.setStatus(SlotStatus.CANCELLED);
-            slot.setPatientId(-1);
+            slot.setPatient(null);
             repository.save(slot);
         });
 
@@ -62,10 +63,10 @@ public class SlotService {
 
     public void freeTheSlot(Long doctorId, String appointmentDate, String startTime) {
 
-        Optional<Slot> slot = repository.findByDoctorIdAndDateAndStartTime(doctorId, appointmentDate, startTime);
+        Optional<Slot> slot = repository.findByDoctor_DoctorIdAndDateAndStartTime(doctorId, appointmentDate, startTime);
         slot.ifPresentOrElse(slot1 -> {
                     slot1.setStatus(SlotStatus.AVAILABLE);
-                    slot1.setPatientId(-1);
+                    slot1.setPatient(null);
                     repository.save(slot1);
                 },
                 () -> {

@@ -5,11 +5,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.test.hospitalmanagementsystem.entity.AppointmentHistory;
-import org.test.hospitalmanagementsystem.entity.DoctorSchedule;
-import org.test.hospitalmanagementsystem.entity.Slot;
+import org.test.hospitalmanagementsystem.entity.*;
 import org.test.hospitalmanagementsystem.model.AppointmentRequest;
 import org.test.hospitalmanagementsystem.model.AppointmentResponse;
+import org.test.hospitalmanagementsystem.model.SlotResponse;
 import org.test.hospitalmanagementsystem.repository.AppointmentHistoryRepository;
 
 import java.util.List;
@@ -28,8 +27,15 @@ public class AppointmentService {
         this.appointmentHistoryRepository = appointmentHistoryRepository;
     }
 
-    public List<Slot> getAllSlotsByDateAndDoctorId(String date, Long doctorId) {
-        return slotService.getAllSlotsByDateAndDoctorId(date, doctorId);
+    public List<SlotResponse> getAllSlotsByDateAndDoctorId(String date, Long doctorId) {
+         return slotService.getAllSlotsByDateAndDoctorId(date, doctorId).stream().map(slot -> SlotResponse.builder()
+                .slotId(slot.getSlotId())
+                .date(slot.getDate())
+                .startTime(slot.getStartTime())
+                .endTime(slot.getEndTime())
+                .status(slot.getStatus())
+                .doctorId(slot.getDoctor().getDoctorId())
+                .build()).toList();
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW,isolation = Isolation.REPEATABLE_READ)
@@ -38,9 +44,9 @@ public class AppointmentService {
         try{
             Slot slot = slotService.bookSlot(appointmentRequest.slotId(), appointmentRequest.patientId());
             AppointmentHistory appointment = AppointmentHistory.builder()
-                    .hospitalId(appointmentRequest.hospitalId())
-                    .patientId(appointmentRequest.patientId())
-                    .doctorId(appointmentRequest.doctorId())
+                    .hospital(Hospital.builder().hospitalId(appointmentRequest.hospitalId()).build())
+                    .patient(Patient.builder().patientId(appointmentRequest.patientId()).build())
+                    .doctor(Doctor.builder().doctorId(appointmentRequest.doctorId()).build())
                     .appointmentStatus("BOOKED")
                     .appointmentDate(slot.getDate())
                     .startTime(slot.getStartTime())
@@ -63,14 +69,14 @@ public class AppointmentService {
     }
 
     public List<AppointmentResponse> getAppointmentsByPatient(Long patientId) {
-        List<AppointmentHistory> appointments = appointmentHistoryRepository.getAppointmentsByPatientId(patientId);
+        List<AppointmentHistory> appointments = appointmentHistoryRepository.getAppointmentsByPatient_PatientId(patientId);
 
         return appointments.stream().map(appointment -> AppointmentResponse.builder()
                 .appointmentId(appointment.getAppointmentId())
                 .appointmentDate(appointment.getAppointmentDate())
                 .appointmentTime(appointment.getStartTime())
-                .patientDetails(appointment.getPatientId())
-                .doctorDetails(appointment.getDoctorId())
+                .patientDetails(appointment.getPatient().getPatientId())
+                .doctorDetails(appointment.getDoctor().getDoctorId())
                 .appointmentStatus(appointment.getAppointmentStatus())
                 .build()).toList();
     }
@@ -80,10 +86,10 @@ public class AppointmentService {
         slots.forEach(slot -> {
             String date = slot.getDate();
             String startTime = slot.getStartTime();
-            Long doctorId = slot.getDoctorId();
+            Doctor doctorId = slot.getDoctor();
             //Find the appointment for the slot and cancel it
-            Optional<AppointmentHistory> appointment = appointmentHistoryRepository.findByAppointmentDateAndStartTimeAndDoctorId(date, startTime, doctorId);
-            appointment.ifPresent(appointmentHistory -> {
+            List<AppointmentHistory> appointment = appointmentHistoryRepository.findByAppointmentDateAndStartTimeAndDoctor_DoctorId(date, startTime, doctorId.getDoctorId());
+            appointment.forEach(appointmentHistory -> {
                 appointmentHistory.setAppointmentStatus("CANCELLED");
                 appointmentHistoryRepository.save(appointmentHistory);
             });
@@ -92,14 +98,28 @@ public class AppointmentService {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public AppointmentHistory cancelAppointment(Long appointmentId) {
+    public AppointmentResponse cancelAppointment(Long appointmentId) {
         Optional<AppointmentHistory> appointment = appointmentHistoryRepository.findById(appointmentId);
         if(appointment.isEmpty()) throw new RuntimeException("Appointment not found");
         appointment.get().setAppointmentStatus("CANCELLED");
         appointmentHistoryRepository.save(appointment.get());
 
         //Free the slot
-        slotService.freeTheSlot(appointment.get().getDoctorId(),appointment.get().getAppointmentDate(),appointment.get().getStartTime());
-        return appointment.get();
+        slotService.freeTheSlot(appointment.get().getDoctor().getDoctorId(),appointment.get().getAppointmentDate(),appointment.get().getStartTime());
+
+
+        return transformToAppointmentResponse(appointment.get());
+    }
+
+
+    public AppointmentResponse transformToAppointmentResponse(AppointmentHistory appointmentHistory) {
+        return AppointmentResponse.builder()
+                .appointmentId(appointmentHistory.getAppointmentId())
+                .appointmentDate(appointmentHistory.getAppointmentDate())
+                .appointmentTime(appointmentHistory.getStartTime())
+                .patientDetails(appointmentHistory.getPatient().getPatientId())
+                .doctorDetails(appointmentHistory.getDoctor().getDoctorId())
+                .appointmentStatus(appointmentHistory.getAppointmentStatus())
+                .build();
     }
 }

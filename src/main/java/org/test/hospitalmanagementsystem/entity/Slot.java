@@ -2,6 +2,7 @@ package org.test.hospitalmanagementsystem.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
@@ -11,6 +12,7 @@ import org.test.hospitalmanagementsystem.model.SlotStatus;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Slot extends BaseModel{
 
     @Id
@@ -25,12 +27,18 @@ public class Slot extends BaseModel{
     private SlotStatus status;
 
     //Referenced by foreign key constraint from Doctor on field doctorId
-    private long doctorId;
+    @ManyToOne
+    @JoinColumn(name = "doctorId")
+    private Doctor doctor;
 
+    @ManyToOne
+    @JoinColumn(name = "patientId")
     //Referenced by foreign key constraint from Patient on field patientId
-    private long patientId;
+    private Patient patient;
 
     //Referenced by foreign key constraint from DoctorSchedule on field scheduleId
-    private long scheduleId;
+    @ManyToOne
+    @JoinColumn(name = "scheduleId")
+    private DoctorSchedule schedule;
 
 }

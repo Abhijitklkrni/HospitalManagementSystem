@@ -1,11 +1,7 @@
 package org.test.hospitalmanagementsystem.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Builder
@@ -20,13 +16,19 @@ public class AppointmentHistory extends BaseModel{
     private Long appointmentId;
 
     //Referenced by foreign key constraint from Hospital on field hospitalId
-    private Long hospitalId;
+    @ManyToOne
+    @JoinColumn(name="hospitalId")
+    private Hospital hospital;
 
     //Referenced by foreign key constraint from Patient on field patientId
-    private Long patientId;
+    @ManyToOne
+    @JoinColumn(name="patientId")
+    private Patient patient;
 
     //Referenced by foreign key constraint from Doctor on field doctorId
-    private Long doctorId;
+    @ManyToOne
+    @JoinColumn(name="doctorId")
+    private Doctor doctor;
 
     private String appointmentDate;
 

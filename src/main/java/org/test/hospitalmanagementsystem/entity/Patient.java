@@ -2,6 +2,7 @@ package org.test.hospitalmanagementsystem.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
@@ -10,6 +11,7 @@ import org.hibernate.annotations.GenericGenerator;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class Patient extends BaseModel{
 
     @Id
@@ -23,6 +25,8 @@ public class Patient extends BaseModel{
     private String patientEmail;
 
     //Referenced by foreign key constraint from Hospital on field hospitalId
-    private long hospitalId;
+    @ManyToOne
+    @JoinColumn(name = "hospitalId")
+    private Hospital hospital;
 
 }

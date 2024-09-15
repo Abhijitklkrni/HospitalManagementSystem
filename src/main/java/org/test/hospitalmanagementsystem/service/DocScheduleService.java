@@ -50,8 +50,8 @@ public class DocScheduleService {
 
         for (LocalTime time = startTime; time.isBefore(endTime); time = time.plusMinutes(SLOT_DURATION_MIN)) {
             Slot slot = new Slot();
-            slot.setScheduleId(doctorSchedule.getScheduleId());
-            slot.setDoctorId(doctorSchedule.getDoctorId());
+            slot.setSchedule(DoctorSchedule.builder().scheduleId(doctorSchedule.getScheduleId()).build());
+            slot.setDoctor(doctorSchedule.getDoctor());
             slot.setDate(doctorSchedule.getDate());
             slot.setStartTime(time.format(formatter));
             slot.setEndTime(time.plusMinutes(SLOT_DURATION_MIN).format(formatter));

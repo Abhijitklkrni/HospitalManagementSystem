@@ -22,7 +22,9 @@ public class DoctorSchedule extends BaseModel{
     private long scheduleId;
 
     //Referenced by foreign key constraint from Doctor on field doctorId
-    private long doctorId;
+    @ManyToOne
+    @JoinColumn(name = "doctorId")
+    private Doctor doctor;
     private String date;
     private String startTime;
     private String endTime;
@@ -33,7 +35,7 @@ public class DoctorSchedule extends BaseModel{
     public DoctorScheduleResponse toDocScheduleResponse() {
         return DoctorScheduleResponse.builder()
                 .scheduleId(scheduleId)
-                .doctorId(doctorId)
+                .doctorId(doctor.getDoctorId())
                 .date(date)
                 .startTime(startTime)
                 .endTime(endTime)

@@ -20,7 +20,9 @@ public class Doctor extends BaseModel{
     private long doctorId;
 
     //Referenced by foreign key constraint from Hospital on field hospitalId
-    private long hospitalId;
+    @ManyToOne
+    @JoinColumn(name = "hospitalId")
+    private Hospital hospital;
 
     private String doctorName;
     private String doctorAddress;
